@@ -7,6 +7,17 @@
     <title>Forum App</title>
   </head>
   <body>
-    {% include 'navbar.html' %} {% block content%} {% endblock %}
+    {% include 'navbar.html' %}
+    
+    {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}
+        <li></li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+
+
+    {% block content%} {% endblock %}
   </body>
 </html>
