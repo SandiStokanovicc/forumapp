@@ -66,7 +66,10 @@ def home(request):
     )
     room_count = rooms.count()
     topics = Topic.objects.all()
-    context = {'rooms': rooms, 'topics': topics, 'room_count': room_count}
+    room_messages = Message.objects.filter(Q(room__topic__name__icontains=q))
+
+    context = {'rooms': rooms, 'topics': topics,
+               'room_count': room_count, 'room_messages': room_messages}
     return render(request, 'base/home.html', context)
 
 
@@ -139,5 +142,17 @@ def deleteMessage(request, pkRoom, pk):
     if request.method == 'POST':
         message.delete()
         return redirect('room', pk=room.id)
+    context = {'message': message, 'room': room}
+    return render(request, 'base/delete.html', context)
+
+
+@login_required(login_url='login')
+def deleteMessageinFeed(request, pk):
+    message = Message.objects.get(id=pk)
+    if request.user != message.user:
+        return HttpResponse('Not allowed')
+    if request.method == 'POST':
+        message.delete()
+        return redirect('home')
     context = {'message': message, 'room': room}
     return render(request, 'base/delete.html', context)
